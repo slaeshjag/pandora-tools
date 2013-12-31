@@ -6,7 +6,7 @@ BINOUT		=	../build/bin/swaptools
 SRCFILES	=	$(wildcard *.c)
 OBJFILES	=	$(SRCFILES:.c=.o)
 
-CFLAGS		+=	`pkg-config --cflags gtk+-2.0` -Wall -O3
+CFLAGS		+=	`pkg-config --cflags gtk+-2.0` -Wall -O0
 LDFLAGS		+=	`pkg-config --libs gtk+-2.0`
 
 .PHONY: all clean

@@ -2,6 +2,23 @@
 #define	__SWAPFILE_H__
 
 
-void swapfile_detect_active();
+
+struct swapfile_entry {
+	char			*path;
+	int			enable_on_boot;
+	int			enabled;
+	unsigned long long	size;
+};
+
+
+struct {
+	struct swapfile_entry	*entry;
+	int			entries;
+} swapfile;
+
+void swapfile_detect();
+void swapfile_init();
+void swapfile_clear();
+
 
 #endif

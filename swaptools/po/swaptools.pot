@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-31 11:06+0100\n"
+"POT-Creation-Date: 2013-12-31 12:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,26 +17,34 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/main_window.c:52
+#: ../src/main_window.c:59
 msgid "Add existing swap file..."
 msgstr ""
 
-#: ../src/main_window.c:48
+#: ../src/main_window.c:23
+msgid "Enabled"
+msgstr ""
+
+#: ../src/main_window.c:24
+msgid "Enabled at boot"
+msgstr ""
+
+#: ../src/main_window.c:55
 msgid "File"
 msgstr ""
 
-#: ../src/main_window.c:17
+#: ../src/main_window.c:20
 msgid "Location"
 msgstr ""
 
-#: ../src/main_window.c:82
+#: ../src/main_window.c:90
 msgid "Megabytes"
 msgstr ""
 
-#: ../src/main_window.c:19
+#: ../src/main_window.c:22
 msgid "Size"
 msgstr ""
 
-#: ../src/main_window.c:37
+#: ../src/main_window.c:44
 msgid "Swap files"
 msgstr ""
