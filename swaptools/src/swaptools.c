@@ -16,8 +16,11 @@ void init_locale() {
 
 int main(int argc, char **argv) {
 	init_locale();
+	gtk_init(&argc, &argv);
 
-	fprintf(stderr, _("arne"));
+	mainwindow_init();
+
+	gtk_main();
 
 	return 0;
 }

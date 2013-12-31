@@ -29,3 +29,6 @@ msgstr "Verktyg för växlingsfil v.0.1\n"
 msgid "arne"
 msgstr "Räksmörgås2"
 
+#: ../src/main_window.c:8
+msgid "Swap files"
+msgstr "Växlingsfiler"
