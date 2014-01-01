@@ -3,6 +3,14 @@
 
 struct main_window {
 	GtkWidget		*win;
+	GtkWidget		*list;
+
+	GtkWidget		*new;
+	GtkWidget		*add;
+	GtkWidget		*delete;
+	GtkWidget		*enable;
+	GtkWidget		*boot_enable;
+	GtkWidget		*rescan;
 };
 
 void mainwindow_init();

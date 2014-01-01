@@ -13,7 +13,7 @@
 #define	_(STRING)	gettext(STRING)
 #include "main_window.h"
 #include "swapfile.h"
-
+#include "new_swapfile.h"
 
 
 struct {

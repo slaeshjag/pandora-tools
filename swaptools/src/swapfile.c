@@ -21,6 +21,26 @@ void swapfile_clear() {
 }
 
 
+int swapfile_get_enabled(const char *fname) {
+	int i;
+
+	for (i = 0; i < swapfile.entries; i++)
+		if (!strcmp(swapfile.entry[i].path, fname))
+			return swapfile.entry[i].enabled;
+	return 0;
+}
+
+
+int swapfile_get_boot_enabled(const char *fname) {
+	int i;
+
+	for (i = 0; i < swapfile.entries; i++)
+		if (!strcmp(swapfile.entry[i].path, fname))
+			return swapfile.entry[i].enable_on_boot;
+	return 0;
+}
+
+
 int swapfile_new(const char *fname) {
 	int i;
 

@@ -2,17 +2,30 @@
 
 void mainwindow_list_add_entry(GtkWidget *list, const char *location, int size, int enabled, int boot_en);
 void mainwindow_populate_list(GtkWidget *list);
+void mainwindow_update_buttons();
 
 void mainwindow_add_custom(GtkWidget *menu_item, gpointer data) {
 	fprintf(stderr, "Add custom!\n");
 }
 
 
+void mainwindow_new_swapfile(GtkWidget *menu_item, gpointer data) {
+	return;
+}
+
+void mainwindow_dummy(GtkWidget *menu_item, gpointer data) {
+	return;
+}
+
+void mainwindow_selection_change(GtkWidget *menu_item, gpointer data) {
+	mainwindow_update_buttons();
+}
 
 void mainwindow_init_list(GtkWidget *list) {
 	GtkCellRenderer *renderer, *icon_rend, *icon_rend2;
 	GtkTreeViewColumn *location, *size, *enabled, *boot_en;
 	GtkListStore *store;
+	GtkTreeSelection *selection;
 
 	renderer = gtk_cell_renderer_text_new();
 	icon_rend = gtk_cell_renderer_pixbuf_new();
@@ -21,7 +34,7 @@ void mainwindow_init_list(GtkWidget *list) {
 	gtk_tree_view_column_set_expand(location, TRUE);
 	size = gtk_tree_view_column_new_with_attributes(_("Size"), renderer, "text", 3, NULL);
 	enabled = gtk_tree_view_column_new_with_attributes(_("Enabled"), icon_rend, "icon-name", 1, NULL);
-	boot_en = gtk_tree_view_column_new_with_attributes(_("Enabled at boot"), icon_rend2, "icon-name", 2, NULL);
+	boot_en = gtk_tree_view_column_new_with_attributes(_("Enable at startup"), icon_rend2, "icon-name", 2, NULL);
 	store = gtk_list_store_new(4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(list), GTK_TREE_MODEL(store));
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), location);
@@ -30,13 +43,16 @@ void mainwindow_init_list(GtkWidget *list) {
 	gtk_tree_view_append_column(GTK_TREE_VIEW(list), size);
 	g_object_unref(store);
 
+	selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(list));
+	g_signal_connect(selection, "changed", G_CALLBACK(mainwindow_selection_change), NULL);
+
 	return;
 }
 
 
 void mainwindow_init() {
 	GtkWidget *vbox, *menubar, *file, *filemenu, *custom, *quit;
-	GtkWidget *list;
+	GtkWidget *list, *hbox;
 
 	st.main_window.win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -74,8 +90,34 @@ void mainwindow_init() {
 	
 	swapfile_detect();
 	mainwindow_populate_list(list);
+	st.main_window.list = list;
+
+
+	/* Create buttons */
+	hbox = gtk_hbox_new(0, FALSE);
+	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 5);
+
+	st.main_window.new = gtk_button_new_from_stock("gtk-new");
+	g_signal_connect(G_OBJECT(st.main_window.new), "activate", G_CALLBACK(mainwindow_new_swapfile), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.new, TRUE, TRUE, 1);
+	st.main_window.add = gtk_button_new_from_stock("gtk-add");
+	g_signal_connect(G_OBJECT(st.main_window.add), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.add, TRUE, TRUE, 1);
+	st.main_window.delete = gtk_button_new_from_stock("gtk-delete");
+	g_signal_connect(G_OBJECT(st.main_window.delete), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.delete, TRUE, TRUE, 1);
+	st.main_window.enable = gtk_button_new();
+	g_signal_connect(G_OBJECT(st.main_window.enable), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.enable, TRUE, TRUE, 1);
+	st.main_window.boot_enable = gtk_button_new();
+	g_signal_connect(G_OBJECT(st.main_window.boot_enable), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.boot_enable, TRUE, TRUE, 1);
+	st.main_window.rescan = gtk_button_new_from_stock("gtk-refresh");
+	g_signal_connect(G_OBJECT(st.main_window.rescan), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.rescan, TRUE, TRUE, 1);
 
 	g_signal_connect_swapped(G_OBJECT(st.main_window.win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
+	mainwindow_update_buttons();
 	gtk_widget_show_all(st.main_window.win);
 
 	return;
@@ -103,5 +145,56 @@ void mainwindow_populate_list(GtkWidget *list) {
 
 	for (i = 0; i < swapfile.entries; i++)
 		mainwindow_list_add_entry(list, swapfile.entry[i].path, swapfile.entry[i].size, swapfile.entry[i].enabled, swapfile.entry[i].enable_on_boot);
+	return;
+}
+
+
+char *mainwindow_list_get_selected() {
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+	void *sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(st.main_window.list));
+	char *value;
+
+	if (gtk_tree_selection_get_selected(GTK_TREE_SELECTION(sel), &model, &iter)) {
+		gtk_tree_model_get(model, &iter, 0, &value,  -1);
+		return value;
+	}
+
+	return NULL;
+}
+
+
+void mainwindow_update_buttons() {
+	char *txt;
+	int enabled, boot_enabled;
+
+	if (!(txt = mainwindow_list_get_selected())) {
+		gtk_button_set_label(GTK_BUTTON(st.main_window.enable), _("Enable"));
+		gtk_button_set_image(GTK_BUTTON(st.main_window.enable), gtk_image_new_from_stock("gtk-yes", GTK_ICON_SIZE_MENU));
+		gtk_widget_set_sensitive(st.main_window.enable, FALSE);
+		gtk_button_set_label(GTK_BUTTON(st.main_window.boot_enable), _("Enable at startup"));
+		gtk_button_set_image(GTK_BUTTON(st.main_window.boot_enable), gtk_image_new_from_stock("gtk-yes", GTK_ICON_SIZE_MENU));
+		gtk_widget_set_sensitive(st.main_window.boot_enable, FALSE);
+		gtk_widget_set_sensitive(st.main_window.delete, FALSE);
+	} else {
+		enabled = swapfile_get_enabled(txt);
+		boot_enabled = swapfile_get_boot_enabled(txt);
+		
+		gtk_button_set_label(GTK_BUTTON(st.main_window.enable), !enabled ? _("Enable") : _("Disable"));
+		gtk_button_set_image(GTK_BUTTON(st.main_window.enable), gtk_image_new_from_stock(!enabled ? "gtk-yes" : "gtk-no", GTK_ICON_SIZE_MENU));
+		gtk_widget_set_sensitive(st.main_window.enable, TRUE);
+		
+		gtk_button_set_label(GTK_BUTTON(st.main_window.boot_enable), !boot_enabled ? _("Enable at startup") : _("No startup enable"));
+		gtk_button_set_image(GTK_BUTTON(st.main_window.boot_enable), gtk_image_new_from_stock(!boot_enabled ? "gtk-yes" : "gtk-no", GTK_ICON_SIZE_MENU));
+		gtk_widget_set_sensitive(st.main_window.boot_enable, TRUE);
+
+		if (strstr(txt, "/dev") == txt)
+			gtk_widget_set_sensitive(st.main_window.delete, FALSE);
+		else
+			gtk_widget_set_sensitive(st.main_window.delete, TRUE);
+		
+		g_free(txt);
+	}
+	
 	return;
 }

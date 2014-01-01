@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-31 12:53+0100\n"
+"POT-Creation-Date: 2014-01-01 01:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,34 +17,46 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/main_window.c:59
+#: ../src/main_window.c:75
 msgid "Add existing swap file..."
 msgstr ""
 
-#: ../src/main_window.c:23
+#: ../src/main_window.c:183
+msgid "Disable"
+msgstr ""
+
+#: ../src/main_window.c:172 ../src/main_window.c:183
+msgid "Enable"
+msgstr ""
+
+#: ../src/main_window.c:37 ../src/main_window.c:175 ../src/main_window.c:187
+msgid "Enable at startup"
+msgstr ""
+
+#: ../src/main_window.c:36
 msgid "Enabled"
 msgstr ""
 
-#: ../src/main_window.c:24
-msgid "Enabled at boot"
-msgstr ""
-
-#: ../src/main_window.c:55
+#: ../src/main_window.c:71
 msgid "File"
 msgstr ""
 
-#: ../src/main_window.c:20
+#: ../src/main_window.c:33
 msgid "Location"
 msgstr ""
 
-#: ../src/main_window.c:90
+#: ../src/main_window.c:132
 msgid "Megabytes"
 msgstr ""
 
-#: ../src/main_window.c:22
+#: ../src/main_window.c:187
+msgid "No startup enable"
+msgstr ""
+
+#: ../src/main_window.c:35
 msgid "Size"
 msgstr ""
 
-#: ../src/main_window.c:44
+#: ../src/main_window.c:60
 msgid "Swap files"
 msgstr ""
