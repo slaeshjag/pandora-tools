@@ -10,6 +10,7 @@ void mainwindow_add_custom(GtkWidget *menu_item, gpointer data) {
 
 
 void mainwindow_new_swapfile(GtkWidget *menu_item, gpointer data) {
+	newswap_spawn();
 	return;
 }
 
@@ -52,7 +53,7 @@ void mainwindow_init_list(GtkWidget *list) {
 
 void mainwindow_init() {
 	GtkWidget *vbox, *menubar, *file, *filemenu, *custom, *quit;
-	GtkWidget *list, *hbox;
+	GtkWidget *list, *hbox, *swin;
 
 	st.main_window.win = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
@@ -86,7 +87,10 @@ void mainwindow_init() {
 	/* Create main listbox */
 	list = gtk_tree_view_new();
 	mainwindow_init_list(list);
-	gtk_box_pack_start(GTK_BOX(vbox), list, TRUE, TRUE, 5);
+	swin = gtk_scrolled_window_new(NULL, NULL);
+	gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(swin), list);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+	gtk_box_pack_start(GTK_BOX(vbox), swin, TRUE, TRUE, 5);
 	
 	swapfile_detect();
 	mainwindow_populate_list(list);
@@ -98,22 +102,22 @@ void mainwindow_init() {
 	gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, FALSE, 5);
 
 	st.main_window.new = gtk_button_new_from_stock("gtk-new");
-	g_signal_connect(G_OBJECT(st.main_window.new), "activate", G_CALLBACK(mainwindow_new_swapfile), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.new), "clicked", G_CALLBACK(mainwindow_new_swapfile), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.new, TRUE, TRUE, 1);
 	st.main_window.add = gtk_button_new_from_stock("gtk-add");
-	g_signal_connect(G_OBJECT(st.main_window.add), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.add), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.add, TRUE, TRUE, 1);
 	st.main_window.delete = gtk_button_new_from_stock("gtk-delete");
-	g_signal_connect(G_OBJECT(st.main_window.delete), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.delete), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.delete, TRUE, TRUE, 1);
 	st.main_window.enable = gtk_button_new();
-	g_signal_connect(G_OBJECT(st.main_window.enable), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.enable), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.enable, TRUE, TRUE, 1);
 	st.main_window.boot_enable = gtk_button_new();
-	g_signal_connect(G_OBJECT(st.main_window.boot_enable), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.boot_enable), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.boot_enable, TRUE, TRUE, 1);
 	st.main_window.rescan = gtk_button_new_from_stock("gtk-refresh");
-	g_signal_connect(G_OBJECT(st.main_window.rescan), "activate", G_CALLBACK(mainwindow_dummy), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.rescan), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.rescan, TRUE, TRUE, 1);
 
 	g_signal_connect_swapped(G_OBJECT(st.main_window.win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
