@@ -9,6 +9,18 @@ void mainwindow_add_custom(GtkWidget *menu_item, gpointer data) {
 }
 
 
+void mainwindow_rescan(GtkWidget *list, gpointer data) {
+	GtkListStore *store;
+	
+	swapfile_clear();
+	swapfile_detect();
+
+	store = GTK_LIST_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(st.main_window.list)));
+	gtk_list_store_clear(store);
+	mainwindow_populate_list(st.main_window.list);
+}
+
+
 void mainwindow_new_swapfile(GtkWidget *menu_item, gpointer data) {
 	newswap_spawn();
 	return;
@@ -117,7 +129,7 @@ void mainwindow_init() {
 	g_signal_connect(G_OBJECT(st.main_window.boot_enable), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.boot_enable, TRUE, TRUE, 1);
 	st.main_window.rescan = gtk_button_new_from_stock("gtk-refresh");
-	g_signal_connect(G_OBJECT(st.main_window.rescan), "clicked", G_CALLBACK(mainwindow_dummy), NULL);
+	g_signal_connect(G_OBJECT(st.main_window.rescan), "clicked", G_CALLBACK(mainwindow_rescan), NULL);
 	gtk_box_pack_start(GTK_BOX(hbox), st.main_window.rescan, TRUE, TRUE, 1);
 
 	g_signal_connect_swapped(G_OBJECT(st.main_window.win), "destroy", G_CALLBACK(gtk_main_quit), NULL);
