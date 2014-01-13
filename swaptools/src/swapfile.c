@@ -1,5 +1,7 @@
 #include "swaptools.h"
-
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 void swapfile_init() {
 	swapfile.entry = NULL;
@@ -132,3 +134,51 @@ void swapfile_detect() {
 
 	return;
 }
+
+
+int swapfile_path_step(char *path) {
+	char *next;
+	struct stat st;
+
+	next = strchr(path, '/');
+	if (next)
+		*(next++) = 0;
+
+	if ((lstat(path, &st)))
+		return 0;
+	if (!S_ISDIR(st.st_mode))
+		return 0;
+	if (!S_ISREG(st.st_mode))
+		return 0;
+
+	if (next)
+		return swapfile_path_step(next);
+
+	return 1;
+}
+
+
+int swapfile_path_acceptable(const char *path) {
+	char *new, *use;
+	int absolute;
+
+	new = strdup(path);
+	use = new;
+
+	if (*path == '/') {
+		absolute = 1;
+		use++;
+	} else
+		absolute = 0;
+
+	if (!swapfile_path_step(use)) {
+		free(new);
+		return 0;
+	}
+
+	free(new);
+	
+	return 1;
+}
+
+
