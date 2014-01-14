@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
 void swapfile_init() {
 	swapfile.entry = NULL;
@@ -160,16 +161,12 @@ int swapfile_path_step(char *path) {
 
 int swapfile_path_acceptable(const char *path) {
 	char *new, *use;
-	int absolute;
 
 	new = strdup(path);
 	use = new;
 
-	if (*path == '/') {
-		absolute = 1;
+	if (*path == '/')
 		use++;
-	} else
-		absolute = 0;
 
 	if (!swapfile_path_step(use)) {
 		free(new);
@@ -181,4 +178,26 @@ int swapfile_path_acceptable(const char *path) {
 	return 1;
 }
 
+
+int swapfile_path_mount(const char *path) {
+	int i;
+	char buff[4096], slask[2048], blask[2048];
+	FILE *fp;
+	
+	i = 0;
+	fp = fopen("/proc/mounts", "r");
+	while (!feof(fp)) {
+		fgets(buff, 4096, fp);
+		sscanf(buff, "%s %s", slask, blask);
+		if (blask[strlen(blask) - 1] != '/')
+			strcat(blask, "/");
+		if (strstr(path, blask) == path) 
+			if (strlen(blask) > i)
+				i = strlen(blask);
+	}
+
+	fclose(fp);
+
+	return i;
+}
 
