@@ -3,6 +3,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 void swapfile_init() {
 	swapfile.entry = NULL;
@@ -141,21 +143,24 @@ int swapfile_path_step(char *path) {
 	char *next;
 	struct stat st;
 
-	next = strchr(path, '/');
-	if (next)
-		*(next++) = 0;
-
+	if (strstr(path, ".."))
+		return 0;
 	if ((lstat(path, &st)))
 		return 0;
-	if (!S_ISDIR(st.st_mode))
+	if (S_ISDIR(st.st_mode));
+	else if (S_ISREG(st.st_mode));
+	else if (S_ISBLK(st.st_mode));
+	else
 		return 0;
-	if (!S_ISREG(st.st_mode))
-		return 0;
-
-	if (next)
-		return swapfile_path_step(next);
-
-	return 1;
+	
+	next = path;
+	while (strchr(next + 1, '/'))
+		next = strchr(next + 1, '/');
+	*next = 0;
+	if (!strlen(path))
+		return 1;
+	
+	return swapfile_path_step(path);
 }
 
 
@@ -164,9 +169,6 @@ int swapfile_path_acceptable(const char *path) {
 
 	new = strdup(path);
 	use = new;
-
-	if (*path == '/')
-		use++;
 
 	if (!swapfile_path_step(use)) {
 		free(new);
